@@ -1,18 +1,17 @@
 import socket
 from client_states import ClientState
-from session_manager import ses_manager
 
 
 class cmanager:
     def __init__(self, smanager: "server_manager.smanager", client_socket: socket.socket, addr: str, 
-                 username: str, state: ClientState, chat_partner: cmanager):
+                 username: str, state: ClientState):
         self.__username = username
         self.__client_socket = client_socket
         self.__addr = addr
         self.__state: ClientState = state
         
         self.__smanager = smanager
-        self.__ses_manager: ses_manager = None
+        self.__ses_manager: "ses_manager" = None
 
 
     def send(self, message: str):
@@ -43,6 +42,7 @@ class cmanager:
 
     def display_all_client_names(self):
         connections = self.__smanager.getConnections().keys()
+        print(f"Connections are {connections}")
         client_names=""
         for name in connections:
             client_names+=name + "\n"
@@ -52,7 +52,7 @@ class cmanager:
     
     def disconnect_client(self):
         self.__client_socket.close()
-        return self.__smanager.disconnect_client(self.__username)
+        return self.__smanager.disconnect_client(self, self.__username)
 
     
     def change_username(self, new_username: str):
@@ -67,8 +67,8 @@ class cmanager:
             #TODO
             return
     
-    def change_session(self, session: ses_manager):
-        self.__ses_manager = ses_manager
+    def change_session(self, session: 'ses_manager'):
+        self.__ses_manager = session
         return
 
 

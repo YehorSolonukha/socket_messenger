@@ -30,7 +30,7 @@ class smanager:
         self.__listening_socket = socket.socket(socket.AF_INET, socket.SOCK_STREAM) #ipv4 + tcp
         server_address = (self.__listening_address, self.__listening_port)
         self.__listening_socket.bind(server_address)
-        self.__listening_socket.listen()
+        self.__listening_socket.listen(2)
 
         return 
     
@@ -39,6 +39,7 @@ class smanager:
     def create_client_server_connections(self):
         # accept client_server_connections
         while True:
+            print("Waiting for new connections...")
             client_socket, client_addr = self.__listening_socket.accept()
             print(f"Incoming connection from {client_addr}")
             
@@ -48,7 +49,9 @@ class smanager:
             
 
     def __handle_client_server_connection(self, client_socket: socket.socket, client_addr: str):
-        username = self.__receive_and_check_username()
+        print(f"The type of all_states is {type(self.__all_states)}")
+        print(f"THREAD started for {client_addr}")
+        username = self.__receive_and_check_username(client_socket)
 
         if not username:
             return
@@ -62,15 +65,18 @@ class smanager:
         self.__client_server_connections[username] = (new_cmanager)
 
         while True:
-            self.__client_server_connections[username].display_menu(self.__all_options)
-            chosen_option = self.__client_server_connections[username].receive()
-            self.dispatch_chosen_option(self.__client_server_connections[username], chosen_option)
+            new_cmanager.display_menu(self.__all_options)
+            print(f"Waiting for chosen_option from {username}...")
+            chosen_option = new_cmanager.receive()
+            print(f"Raw chosen option from user {username} is {repr(chosen_option)}, the type is {type(chosen_option)}")
+            self.dispatch_chosen_option(new_cmanager, chosen_option)
 
 
     def __receive_and_check_username(self, client_socket: socket.socket) -> str:
         client_socket.send("Please, enter you username otherwise you can't access this server: ".encode())
-        username = client_socket.recv(512).strip()
-
+        print("Waiting for username input from...")
+        username = client_socket.recv(512).decode().strip()
+        print(f"Username received is {username} with type: {type(username)}")
         # drop connection if no username was entered
         if not username:
             client_socket.send("Sorry, you haven't entered a proper username.")
@@ -82,18 +88,23 @@ class smanager:
             client_socket.close()
             return
         
+        print(f"Username {username} is accepted")
         return username
 
 
 
 
     def dispatch_chosen_option(self, cmanager: client_manager.cmanager, chosen_option: str):
-        chosen_option.strip()
-
-        if cmanager.getState == ClientState.CHAT: # define missing methods and properties\
+        chosen_option = chosen_option.strip()
+        print(f"chosen option is chosen {chosen_option}")
+        print(f"the type of the state on the client is {type(cmanager.getState())}")
+        print(f"the type of the state in self.__all_states.CHAT: {type(self.__all_states.MENU)}")
+        if cmanager.getState() == self.__all_states.CHAT: # define missing methods and properties\
+            print("enetred chat")
             self.__all_sessions[cmanager.getName()].initialize_communication() # refer to already created session by another user
 
-        elif cmanager.getState == ClientState.MENU:
+        elif cmanager.getState() == self.__all_states.MENU:
+            print("entered menu")
         # check if chosen_option is available
             for option, (handler, is_special) in self.__all_options.items():
                 if is_special and chosen_option.startswith(f"{option} "):
@@ -108,9 +119,11 @@ class smanager:
                     return
                 
                 elif not is_special and chosen_option==option:
+                    print(f"handler for {chosen_option} is reached")
                     handler(cmanager)
                     return
-                
+            
+            print ("skipped the loop")
             cmanager.send("Not a valid option, please try again: \n")
             cmanager.display_menu()
             return self.dispatch_chosen_option()
@@ -121,7 +134,7 @@ class smanager:
 ###### HELPER METHODS ######
 
     def getConnections(self):
-            return self.__client_server_connections
+        return self.__client_server_connections
     
 ###### HELPER METHODS FOR CLIENT MANAGER ######
 

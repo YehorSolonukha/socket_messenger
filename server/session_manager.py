@@ -1,10 +1,9 @@
 from client_manager import cmanager
-from server_manager import smanager
 from client_states import ClientState
 
 
 class ses_manager():
-    def __init__(self, cmanagerSrc: cmanager, cmanagerTarget: cmanager, smanager: smanager):
+    def __init__(self, cmanagerSrc: cmanager, cmanagerTarget: cmanager, smanager: "smanager"):
         self.cmanagerSrc = cmanagerSrc
         self.cmanagerTarget = cmanagerTarget
         self.smanager = smanager
