@@ -1,14 +1,18 @@
 import socket
 from client_states import ClientState
+from session_manager import ses_manager
 
 
 class cmanager:
-    def __init__(self, smanager: "server_manager.smanager", client_socket: socket.socket, addr: str, username: str, state: ClientState):
-        self.__smanager = smanager
+    def __init__(self, smanager: "server_manager.smanager", client_socket: socket.socket, addr: str, 
+                 username: str, state: ClientState, chat_partner: cmanager):
         self.__username = username
         self.__client_socket = client_socket
         self.__addr = addr
         self.__state: ClientState = state
+        
+        self.__smanager = smanager
+        self.__ses_manager: ses_manager = None
 
 
     def send(self, message: str):
@@ -62,6 +66,10 @@ class cmanager:
     def change_state(self, new_state: str):
             #TODO
             return
+    
+    def change_session(self, session: ses_manager):
+        self.__ses_manager = ses_manager
+        return
 
 
     def getName(self):
@@ -70,5 +78,8 @@ class cmanager:
 
     def getState(self):
         return self.__state
+    
+    def getSession(self):
+        return self.__ses_manager
     
     

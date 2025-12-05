@@ -1,4 +1,26 @@
 ### Project Notes ###
+
+
+-------
+
+change every isinstance to type()
+
+define session_manager instances in dictionary and in each cmanager
+
+declare function in session manager
+keep in check:
+- states
+
+create two types of function initalize_communication - with arg - message and without
+
+-------
+
+# deal with session_manager and creating client_client connections
+
+# create a class/ static method to instantiate a class (so that handler connected to 
+# 'connect' can be run as handler() without changing syntax,
+# a little twicking with arguments should be enough). And then I can simply handle everything inside session_manager
+
 # implement threads
 # create a method check_username instead of big chunk in method create_connections
 
