@@ -64,7 +64,8 @@ class smanager:
         
         self.__client_server_connections[username] = (new_cmanager)
 
-        while True:
+        while new_cmanager.getState() != self.__all_states.DISCONNECTED:
+            print("entered")
             new_cmanager.display_menu(self.__all_options)
             print(f"Waiting for chosen_option from {username}...")
             chosen_option = new_cmanager.receive()
@@ -112,7 +113,7 @@ class smanager:
                     parts = chosen_option.split()
                     if len(parts) != 2:
                         cmanager.send("Correct usage: <command> <argument>. Please try again, choose one of the following: ")
-                        cmanager.display_menu()
+                        cmanager.display_menu(self.__all_options)
                         return self.dispatch_chosen_option()
                     
                     handler(cmanager, parts[1])
@@ -125,8 +126,7 @@ class smanager:
             
             print ("skipped the loop")
             cmanager.send("Not a valid option, please try again: \n")
-            cmanager.display_menu()
-            return self.dispatch_chosen_option()
+            return
 
 
 

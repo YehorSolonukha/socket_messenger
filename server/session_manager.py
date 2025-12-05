@@ -34,7 +34,7 @@ class ses_manager():
 
     def initialize_communication(self, requester, message: str = None):
         # check if requester is smanager or self
-        if not (isinstance(requester, smanager) or isinstance(requester, self)):
+        if not (isinstance(requester, 'smanager') or isinstance(requester, self)):
             print("Not autorized to use this method - 'initialize_communication()'")
             return
         
@@ -85,7 +85,7 @@ class ses_manager():
 
 
     def __check_if_target_exists(self):
-        if smanager.getConnections()[self.cmanagerTarget.getName()]:
+        if self.smanager.getConnections()[self.cmanagerTarget.getName()]:
             return True
         return False
     

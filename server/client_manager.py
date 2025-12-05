@@ -52,6 +52,7 @@ class cmanager:
     
     def disconnect_client(self):
         self.__client_socket.close()
+        self.__state = ClientState.DISCONNECTED
         return self.__smanager.disconnect_client(self, self.__username)
 
     
