@@ -3,6 +3,16 @@
 
 -------
 
+- 1. fix - display_menu method to correctly show options
+- 1.1 fix - initial response to correctly show welcome message
+2. add feature - do not show display_menu for the second time instead make it one of the options to show menu again 
+3. investigate and fix - ls is entered -> good output and then bad command is entered -> good output\
+but after that if I enter ls -> bad output
+4. investigate and fix - when user sends Ctrl+C the name is still in dictionary -> other users can't use the name
+Additionally leaves a security hole. Detect that the user is disconnected and delete it from local DB
+***try xxx except ConnectionResetError: delete user from DB***
+5. fix - the case when username is already taken
+
 change every isinstance to type()
 
 define session_manager instances in dictionary and in each cmanager
@@ -59,6 +69,7 @@ create two types of function initalize_communication - with arg - message and wi
 # History of chat
 # containers
 # log in services (passwords, encyption)
+# Add ENCRYPTION
 
 ### Containers Presentation ###
 # include all I already know:

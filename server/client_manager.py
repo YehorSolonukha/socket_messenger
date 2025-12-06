@@ -31,12 +31,12 @@ class cmanager:
 
     def display_menu(self, options: dict):
         # create a menu
-        message = "Please choose one of the following options: \n"
+        message = "\nHere are all available commmands: \n"
         for key in options.keys():
-            message += f"{key}: {options[key]}\n"
+            message += f"\t-{key}\n"
         
         # send the menu
-        self.__client_socket.send(message.encode())
+        self.send(message)
         return
     
 

@@ -74,18 +74,19 @@ class smanager:
 
 
     def __receive_and_check_username(self, client_socket: socket.socket) -> str:
-        client_socket.send("Please, enter you username otherwise you can't access this server: ".encode())
+        client_socket.send("Please, enter you username otherwise you can't access this server".encode())
         print("Waiting for username input from...")
         username = client_socket.recv(512).decode().strip()
         print(f"Username received is {username} with type: {type(username)}")
+        
         # drop connection if no username was entered
         if not username:
-            client_socket.send("Sorry, you haven't entered a proper username.")
+            client_socket.send("Sorry, you haven't entered a proper username.".encode())
             client_socket.close()
             return
         
         elif username in self.__client_server_connections:
-            client_socket.send("Sorry, this username is not available, please enter another one.")
+            client_socket.send("Sorry, this username is not available, please enter another one.".encode())
             client_socket.close()
             return
         

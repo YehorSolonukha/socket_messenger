@@ -22,12 +22,11 @@ class Client:
 
     def talk_to_server(self):
         while True:
-            message = input("Please enter your message: ")
+            message = input()
             self.__send(message)
             
             try:
                 response = self.__receive()
-                print(f"response from the server: {response}")
             except ConnectionAbortedError:
                 print("Server disconnected.")
                 break
