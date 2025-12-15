@@ -23,7 +23,7 @@ class smanager:
         self.__all_options = all_options
         self.__all_states: ClientState = ClientState
 
-        self.__all_sessions: dict[str, ses_manager] = {}
+        self.__all_sessions: dict[str, tuple[ses_manager, ses_manager]] = {}
 
 
 
@@ -100,7 +100,7 @@ class smanager:
         chosen_option = chosen_option.strip()
         print(f"chosen option is chosen {chosen_option}")
         if cmanager.getState() == self.__all_states.CHAT: # define missing methods and properties\
-            print("enetred chat")
+            print("entered chat")
             self.__all_sessions[cmanager.getName()].initialize_communication() # refer to already created session by another user
 
         elif cmanager.getState() == self.__all_states.MENU:
@@ -115,6 +115,13 @@ class smanager:
                         cmanager.display_menu(self.__all_options)
                         return self.dispatch_chosen_option()
                     
+                    # handler for connect 
+                    if chosen_option.startswith("connect "):
+                        new_ses_manager = ses_manager(cmanagerSrc=cmanager,
+                                                      cmanagerTarget=self.__client_server_connections[parts[1]],
+                                                      smanager=self)
+                        handler(new_ses_manager)
+
                     handler(cmanager, parts[1])
                     return
                 
@@ -165,9 +172,10 @@ class smanager:
 
 ###### HELPER METHODS FOR SESSION MANAGER ######
     
-    def change_sessions(self, src_name: str, src_ses_manager: ses_manager, tgt_ses_manager: ses_manager):
-        self.__all_sessions[src_name]=(src_ses_manager, tgt_ses_manager)
-        return
+    #def update_sessions(self, src_name: str, src_ses_manager: ses_manager, tgt_ses_manager: ses_manager):
+    #    self.__all_sessions[src_name]=(src_ses_manager, tgt_ses_manager)
+    #    return
+
     
 
     

@@ -21,7 +21,7 @@ class ses_manager():
         
         self.__change_states_to_chat()
         self.__set_sessions_in_cmanagers()
-        self.__set_sessions_in_global_dictionary()
+        #self.__set_sessions_in_global_dictionary()
 
         self.cmanagerTarget.send(f"You are now in chat with {self.cmanagerSrc.getName()}")
         # self.__set_chat_partners() - assign an instance of ses_manager to both clients
@@ -34,9 +34,9 @@ class ses_manager():
 
     def initialize_communication(self, requester, message: str = None):
         # check if requester is smanager or self
-        if not (isinstance(requester, 'smanager') or isinstance(requester, self)):
-            print("Not autorized to use this method - 'initialize_communication()'")
-            return
+        #if not (isinstance(requester, 'smanager') or isinstance(requester, self)):
+        #    print("Not autorized to use this method - 'initialize_communication()'")
+        #    return
         
         self.cmanagerSrc.send(f"You entered a chat with {self.cmanagerTarget.getName()}, please type /exit to exit.\n")
 
@@ -75,12 +75,12 @@ class ses_manager():
         self.cmanagerTarget.change_session(target_session)
         return 
     
-    def __set_sessions_in_global_dictionary(self):
-        target_session = ses_manager(self.cmanagerTarget, self.cmanagerSrc, self.smanager)
-
-        self.smanager.update_sessions(self.cmanagerSrc.getName(), self, target_session)
-        self.smanager.update_sessions(self.cmanagerTarget.getName(), target_session, self)
-        return
+    #def __set_sessions_in_global_dictionary(self):
+    #    target_session = ses_manager(self.cmanagerTarget, self.cmanagerSrc, self.smanager)
+    #
+    #    self.smanager.update_sessions(self.cmanagerSrc.getName(), self, target_session)
+    #    self.smanager.update_sessions(self.cmanagerTarget.getName(), target_session, self)
+    #    return
 
 
 
