@@ -10,23 +10,29 @@ class ses_manager():
 
 
     def create_client_client_connections(self):
-        #TODO
+        # check if target exist
         if not self.__check_if_target_exists():
             self.cmanagerSrc.send("Target doesn't exist in our data base, please try again later")
             return
         
+        # check if target available
         if not self.__check_if_target_available():
             self.cmanagerSrc.send(f"Unable to connect with {self.cmanagerTarget.getName()}, user is in 'chat' mode... \n Please try again later")
             return
         
-        self.__change_states_to_chat()
+
+        # set sessions for both
         self.__set_sessions_in_cmanagers()
+        # change states for both
+        self.__change_states_to_chat()
+        
         #self.__set_sessions_in_global_dictionary()
 
-        self.cmanagerTarget.send(f"You are now in chat with {self.cmanagerSrc.getName()}")
-        # self.__set_chat_partners() - assign an instance of ses_manager to both clients
+        # notify target that it is chatting with source (probably not needed)
+        # self.cmanagerTarget.send(f"You are now in chat with {self.cmanagerSrc.getName()}")
 
-        self.initialize_communication(self)
+        # relay messages from source to target
+        self.initialize_communication(requester=self)
 
         return
     
@@ -53,7 +59,7 @@ class ses_manager():
           
           
     def __handle_exit_message(self, message):
-        #TODO 
+        pass
         # - call a method that deletes all instances of sess_manager (from server_manager dictionary and from each cmanager attributes)
         # - print to both users that chat has ended
 

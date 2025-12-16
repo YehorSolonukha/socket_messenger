@@ -23,8 +23,10 @@ class Client:
     def talk_to_server(self):
         while True:
             message = input()
+
             if not message:
                 continue
+            
             self.__send(message)
             
             try:

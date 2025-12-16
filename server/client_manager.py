@@ -66,9 +66,12 @@ class cmanager:
         return self.__smanager.change_username(self, old_username=old_username, new_username=new_username)
 
 
-    def change_state(self, new_state: str):
-            #TODO
+    def change_state(self, new_state: ClientState):
+        if not isinstance(new_state, ClientState):
+            print("[ERROR] - the state isn't changed, not a member of enum - ClientState")
             return
+        self.__state = new_state
+        return
     
     def change_session(self, session: 'ses_manager'):
         self.__ses_manager = session

@@ -101,7 +101,7 @@ class smanager:
         print(f"chosen option is chosen {chosen_option}")
         if cmanager.getState() == self.__all_states.CHAT: # define missing methods and properties\
             print("entered chat")
-            self.__all_sessions[cmanager.getName()].initialize_communication() # refer to already created session by another user
+            self.__client_server_connections[cmanager.getName()].getSession().initialize_communication(self, chosen_option) # refer to already created session by another user
 
         elif cmanager.getState() == self.__all_states.MENU:
             print("entered menu")
