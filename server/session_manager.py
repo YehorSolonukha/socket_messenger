@@ -38,6 +38,7 @@ class ses_manager():
         return
     
 
+# ---Direct communication between Clients (message relay)--- #
 
     def initialize_communication(self, requester, message: str = None):
         # check if requester is smanager or self
@@ -48,28 +49,38 @@ class ses_manager():
         if not message:
             message = self.cmanagerSrc.receive()
 
-        while True:
+        while not self.__exit_condition_met():
             if message=='/exit':
-                self.__handle_exit_message()
-                return
+                self.__set_exit_condition()
+                break
             
             self.cmanagerTarget.send_named(message, self.cmanagerSrc.getName())
-            message = self.cmanagerSrc.receive()
-          
-          
-    def __handle_exit_message(self):
+
+            if not self.__exit_condition_met(): # might be redundant
+                message = self.cmanagerSrc.receive()
+            else:
+                break
+        
+        self.__exit_condition_handler()
+        return
+
+    
+    def __exit_condition_met(self):
+        pass
+
+    def __exit_condition_handler(self):
+        pass
+    
+    def __set_exit_condition(self):
         # change each client's session to None
         self.__set_sessions_in_cmanagers_to_None()
 
         # change each client's state back to MENU
         self.__change_states_to_menu()
-
-        # send (chat ended)
-        self.cmanagerSrc.send(f"You exited the chat with {self.cmanagerTarget.getName()}.")
-
-        self.cmanagerTarget.send(f"{self.cmanagerSrc.getName()} decided to exit the chat.")
         return
     
+# ---The end of direct communication--- #
+
     def __announce_established_connection_to_both_clients(self):
         self.cmanagerSrc.send(f"You entered a chat with {self.cmanagerTarget.getName()}, please type /exit to exit.\n")
         self.cmanagerTarget.send(f"You entered a chat with {self.cmanagerSrc.getName()}, please type /exit to exit.\n")
@@ -82,17 +93,6 @@ class ses_manager():
         target_session = ses_manager(self.cmanagerTarget, self.cmanagerSrc, self.smanager)
         self.cmanagerTarget.change_session(target_session)
         return 
-    
-    def __set_sessions_in_cmanagers_to_None(self):
-        self.cmanagerSrc.change_session_to_None()
-        self.cmanagerTarget.change_session_to_None()
-    #def __set_sessions_in_global_dictionary(self):
-    #    target_session = ses_manager(self.cmanagerTarget, self.cmanagerSrc, self.smanager)
-    #
-    #    self.smanager.update_sessions(self.cmanagerSrc.getName(), self, target_session)
-    #    self.smanager.update_sessions(self.cmanagerTarget.getName(), target_session, self)
-    #    return
-
 
 
     def __check_if_target_exists(self):
@@ -120,7 +120,3 @@ class ses_manager():
         return
     
 
-    def __change_states_to_menu(self):
-        self.cmanagerSrc.change_state(ClientState.MENU)
-        self.cmanagerTarget.change_state(ClientState.MENU)
-        return
