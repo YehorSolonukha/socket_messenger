@@ -32,6 +32,7 @@ class ses_manager():
         # self.cmanagerTarget.send(f"You are now in chat with {self.cmanagerSrc.getName()}")
 
         # relay messages from source to target
+        self.__announce_established_connection_to_both_clients()
         self.initialize_communication(requester=self)
 
         return
@@ -43,8 +44,6 @@ class ses_manager():
         #if not (isinstance(requester, 'smanager') or isinstance(requester, self)):
         #    print("Not autorized to use this method - 'initialize_communication()'")
         #    return
-        
-        self.cmanagerSrc.send(f"You entered a chat with {self.cmanagerTarget.getName()}, please type /exit to exit.\n")
 
         if not message:
             message = self.cmanagerSrc.receive()
@@ -71,6 +70,11 @@ class ses_manager():
 
         # self.smanager.remove_session()
 
+        return
+    
+    def __announce_established_connection_to_both_clients(self):
+        self.cmanagerSrc.send(f"You entered a chat with {self.cmanagerTarget.getName()}, please type /exit to exit.\n")
+        self.cmanagerTarget.send(f"You entered a chat with {self.cmanagerSrc.getName()}, please type /exit to exit.\n")
         return
     
     
