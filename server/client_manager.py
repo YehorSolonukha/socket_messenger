@@ -76,11 +76,6 @@ class cmanager:
     def change_session(self, session: 'ses_manager'):
         self.__ses_manager = session
         return
-    
-    def change_session_to_None(self):
-        self.__ses_manager = None
-        return
-
 
     def getName(self):
         return self.__username

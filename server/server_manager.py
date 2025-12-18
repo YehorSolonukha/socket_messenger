@@ -121,7 +121,9 @@ class smanager:
                                                       cmanagerTarget=self.__client_server_connections[parts[1]],
                                                       smanager=self)
                         handler(new_ses_manager)
+                        return
 
+                    print(f"BUG - parts: {parts}")
                     handler(cmanager, parts[1])
                     return
                 

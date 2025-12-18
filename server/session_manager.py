@@ -23,8 +23,8 @@ class ses_manager():
 
         # set sessions for both
         self.__set_sessions_in_cmanagers()
-        # change states for both
-        self.__change_states_to_chat()
+        # change states for both to chat
+        self.__change_states_in_cmanagers(ClientState.CHAT)
         
         #self.__set_sessions_in_global_dictionary()
 
@@ -52,31 +52,35 @@ class ses_manager():
         while not self.__exit_condition_met():
             if message=='/exit':
                 self.__set_exit_condition()
-                break
+                self.__exit_condition_handler()
+                return 
             
-            self.cmanagerTarget.send_named(message, self.cmanagerSrc.getName())
-
-            if not self.__exit_condition_met(): # might be redundant
-                message = self.cmanagerSrc.receive()
-            else:
-                break
+            self.cmanagerTarget.send_named(message, self.cmanagerSrc.getName()) # might be redundant
+            message = self.cmanagerSrc.receive()
         
-        self.__exit_condition_handler()
+        self.__exit_condition_handler(message)
         return
 
     
     def __exit_condition_met(self):
-        pass
+        if not self.cmanagerSrc.getSession():
+            return True
+        return False
 
-    def __exit_condition_handler(self):
-        pass
+    def __exit_condition_handler(self, message: str = None):
+        return message
     
     def __set_exit_condition(self):
         # change each client's session to None
         self.__set_sessions_in_cmanagers_to_None()
 
         # change each client's state back to MENU
-        self.__change_states_to_menu()
+        self.__change_states_in_cmanagers(ClientState.MENU)
+
+        self.cmanagerSrc.send(f"The chat with {self.cmanagerTarget.getName()} is over\n")
+        self.cmanagerSrc.display_menu()
+        self.cmanagerTarget.send(f"The chat with {self.cmanagerSrc.getName()} is over\n")
+        self.cmanagerTarget.display_menu()
         return
     
 # ---The end of direct communication--- #
@@ -93,6 +97,12 @@ class ses_manager():
         target_session = ses_manager(self.cmanagerTarget, self.cmanagerSrc, self.smanager)
         self.cmanagerTarget.change_session(target_session)
         return 
+    
+    def __set_sessions_in_cmanagers_to_None(self):
+        self.cmanagerSrc.change_session(None)
+        self.cmanagerTarget.change_session(None)
+        return 
+
 
 
     def __check_if_target_exists(self):
@@ -112,11 +122,13 @@ class ses_manager():
         return
 
 
-    
 
-    def __change_states_to_chat(self):
-        self.cmanagerSrc.change_state(ClientState.CHAT)
-        self.cmanagerTarget.change_state(ClientState.CHAT)
+    def __change_states_in_cmanagers(self, new_state: ClientState):
+        if not isinstance(new_state, ClientState):
+            print("The state is incorrect!")
+            return
+        self.cmanagerSrc.change_state(new_state)
+        self.cmanagerTarget.change_state(new_state)
         return
     
 
