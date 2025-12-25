@@ -120,7 +120,7 @@ class SessionManager:
         return
 
     def __check_if_target_exists(self):
-        if self.smanager.getConnections()[self.cmanagerTarget.get_username()]:
+        if self.smanager.get_connections()[self.cmanagerTarget.get_username()]:
             return True
         return False
 

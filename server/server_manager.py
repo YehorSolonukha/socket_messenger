@@ -120,7 +120,7 @@ class ServerManager:
             print("entered chat")
             self.__client_server_connections[
                 cmanager.get_username()
-            ].get_session().initialize_communication(
+            ].get_session().start_talking(
                 self, chosen_option
             )  # refer to already created session by another user
 
@@ -137,15 +137,15 @@ class ServerManager:
                         )
                         cmanager.show_menu(self.__all_options)
                         return
-                    
-                    # check if user exists
-                    if not self.__client_server_connections[parts[1]]:
-                        cmanager.send_message(f"User {parts[1]} doesn't exist")
-                        cmanager.show_menu()
-                        return
 
                     # handler for connect
                     if chosen_option.startswith("connect "):
+                        # check if user exists
+                        if parts[1] not in self.__client_server_connections.keys():
+                            cmanager.send_message(f"User '{parts[1]}' doesn't exist")
+                            cmanager.show_menu()
+                            return
+
                         new_ses_manager = SessionManager(
                             cmanagerSrc=cmanager,
                             cmanagerTarget=self.__client_server_connections[parts[1]],
