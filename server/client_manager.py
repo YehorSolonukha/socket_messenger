@@ -5,7 +5,7 @@ from client_states import ClientStates
 class ClientManager:
     def __init__(
         self,
-        smanager: "server_manager.smanager",
+        smanager: "server_manager.ServerManager",
         client_socket: socket.socket,
         addr: str,
         username: str,
@@ -34,7 +34,7 @@ class ClientManager:
 
     def show_menu(self, options: dict = None):
         if options is None:
-            options = self.__smanager.getOptions()
+            options = self.__smanager.get_options_from_menu()
         # create a menu
         message = "\nHere are all available commmands: \n"
         for key in options.keys():
@@ -45,7 +45,7 @@ class ClientManager:
         return
 
     def show_available_clients(self):
-        connections = self.__smanager.getConnections().keys()
+        connections = self.__smanager.get_connections().keys()
         print(f"Connections are {connections}")
         client_names = ""
         for name in connections:
@@ -63,7 +63,7 @@ class ClientManager:
         old_username = self.__username
         self.__username = new_username
         # update name server wide
-        return self.__smanager.change_username(
+        return self.__smanager.set_username(
             self, old_username=old_username, new_username=new_username
         )
 
