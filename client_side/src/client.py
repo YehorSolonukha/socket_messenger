@@ -1,9 +1,15 @@
+# core functionality
 import socket
 import threading
 
+# config
+from dotenv import load_dotenv
+import os
+
+load_dotenv()
 
 class Client:
-    def __init__(self, server_address: str = "localhost", server_port: int = 5678):
+    def __init__(self, server_address: str = os.getenv("SERVER_ADDRESS"), server_port: int = int(os.getenv("SERVER_PORT"))):
         self.socket = None
         self.server_address = server_address
         self.server_port = server_port

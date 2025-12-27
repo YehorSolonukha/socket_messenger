@@ -1,0 +1,28 @@
+services:
+  client1:
+    build: ./client_side
+    env_file:
+      - ./client_side/.env
+    container_name: messenger_client1
+    stdin_open: true 
+    tty: true
+    depends_on:
+      - server
+
+  client2:
+    build: ./client_side
+    env_file:
+      - ./client_side/.env
+    container_name: messenger_client2
+    stdin_open: true 
+    tty: true
+    depends_on:
+      - server
+  
+  server:
+    build: ./server_side
+    env_file:
+      - ./server_side/.env
+    container_name: messenger_server
+    stdin_open: true 
+    tty: true

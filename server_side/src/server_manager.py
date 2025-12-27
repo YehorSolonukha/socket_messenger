@@ -1,17 +1,26 @@
+# core functionality
 import socket
 import threading
+
+# config
+from dotenv import load_dotenv
+import os
+
+# typehinting
 from typing import Callable
 
+# internal modules
 import client_manager
 from session_manager import SessionManager
 from client_states import ClientStates
 
+load_dotenv()
 
 class ServerManager:
     def __init__(
         self,
-        listening_addr="localhost",
-        listening_port=5678,
+        listening_addr: str = os.getenv("LISTENING_ADDRESS"),
+        listening_port: int = int(os.getenv("LISTENING_PORT")),
         all_options: dict[str, tuple[Callable, bool]] = {
             "ls": (client_manager.ClientManager.show_available_clients, False),
             "disconnect": (client_manager.ClientManager.disconnect_client, False),
@@ -38,6 +47,8 @@ class ServerManager:
         self.__listening_socket = socket.socket(
             socket.AF_INET, socket.SOCK_STREAM
         )  # ipv4 + tcp
+        print(self.__listening_address)
+        print(self.__listening_port)
         server_address = (self.__listening_address, self.__listening_port)
         self.__listening_socket.bind(server_address)
         self.__listening_socket.listen(20)
