@@ -1,5 +1,6 @@
 from socket_messenger.core.client.client_manager import ClientManager
 from socket_messenger.core.client.client_states import ClientStates
+from socket_messenger.storage.storage_manager import StorageManager
 
 
 class SessionManager:
@@ -12,22 +13,9 @@ class SessionManager:
         self.cmanagerSrc = cmanagerSrc
         self.cmanagerTarget = cmanagerTarget
         self.smanager = smanager
+        self.storage_manager = StorageManager()
 
     def create_and_handle_client_to_client_communication(self):
-        # check if target exists
-        if not self._check_if_target_exists():
-            self.cmanagerSrc.send_message(
-                "Target doesn't exist in our data base, please try again later"
-            )
-            return
-
-        # check if target available
-        if not self._check_if_target_in_another_chat():
-            self.cmanagerSrc.send_message(
-                f"Unable to connect with {self.cmanagerTarget.get_username()}, user is in 'chat' mode... \n Please try again later"
-            )
-            return
-
         # set sessions for both
         self._set_session_managers_for_both_clients()
         # change states for both to chat
@@ -111,6 +99,7 @@ class SessionManager:
         self.cmanagerTarget.set_session(None)
         return
 
+# TO BE CHANGED ->
     def _check_if_target_exists(self):
         if self.smanager.get_connections()[self.cmanagerTarget.get_username()]:
             return True
@@ -124,6 +113,7 @@ class SessionManager:
         self.cmanagerSrc.send_message("Unknown error occured, please wait until we resolve it")
         print("New ClientState.STATE isn't handled")
         return
+# <- TO BE CHANGED
 
     def _set_states_for_both_clients(self, new_state: ClientStates):
         if not isinstance(new_state, ClientStates):

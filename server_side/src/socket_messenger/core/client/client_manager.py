@@ -80,3 +80,9 @@ class ClientManager:
 
     def get_session(self):
         return self._ses_manager
+    
+    # helpers
+    def is_in_chat(self) -> bool:
+        if self.get_state() == ClientStates.CHAT:
+            return True
+        return False

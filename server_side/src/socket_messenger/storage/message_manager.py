@@ -1,9 +1,9 @@
 class Message():
     def __init__(self, sender: str, receiver: str, content: str, timestamp):
-        self.sender
-        self.receiver
-        self.content
-        self.timestamp
+        self.sender = sender
+        self.receiver = receiver
+        self.content = content
+        self.timestamp = timestamp
 
 class MessageManager():
     def save_message(message: Message) -> bool:

@@ -1,12 +1,12 @@
 services:
   server:
-    image: yehor542/socket_messenger_server:latest
+    build: ./server_side/
     env_file:
       - ./server_side/.env
 
 
   client:
-    image: yehor542/socket_messenger_client:latest
+    build: ./client_side/
     env_file:
       - ./client_side/.env
     depends_on:
