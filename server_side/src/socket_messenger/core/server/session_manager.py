@@ -16,12 +16,6 @@ class SessionManager:
         self.storage_manager = StorageManager()
 
     def create_and_handle_client_to_client_communication(self):
-        # set sessions for both
-        self._set_session_managers_for_both_clients()
-        # change states for both to chat
-        self._set_states_for_both_clients(ClientStates.CHAT)
-
-        # initiate actual chat
         self._notify_both_clients_about_established_connection()
         return
 
@@ -37,9 +31,14 @@ class SessionManager:
             self._exit_condition_handler(message)
             return
 
-        self.cmanagerTarget.send_message_include_sender(
-            message, sender.get_username()
-        )
+        if sender is self.cmanagerSrc:
+            self.cmanagerTarget.send_message_include_sender(
+                message, sender.get_username()
+            )
+            return
+        self.cmanagerSrc.send_message_include_sender(
+                message, sender.get_username()
+            )
 
     def _exit_condition_met(self):
         if not self.cmanagerSrc.get_session() and self.cmanagerSrc.get_state() == ClientStates.MENU:
@@ -72,15 +71,6 @@ class SessionManager:
         self.cmanagerTarget.send_message(
             f"You entered a chat with {self.cmanagerSrc.get_username()}, please type /exit to exit.\n"
         )
-        return
-
-    def _set_session_managers_for_both_clients(self):
-        self.cmanagerSrc.set_session(self)
-
-        target_session = SessionManager(
-            self.cmanagerTarget, self.cmanagerSrc, self.smanager
-        )
-        self.cmanagerTarget.set_session(target_session)
         return
 
     def _set_session_managers_for_both_clients_to_none(self):

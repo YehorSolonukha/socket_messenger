@@ -35,7 +35,8 @@ class ClientManager:
                 break
             if self.is_in_chat():
                 self.session.relay(self, message)
-            self.command_handler.dispatch(self, message)
+            else:
+                self.command_handler.dispatch(self, message)
 
     # basic IO
     def send_message(self, message: str):
@@ -59,11 +60,11 @@ class ClientManager:
 
     # getters/setters
     def set_session(self, new_session):
-        self.set_session = new_session
-        if new_session:
-            self.set_state(ClientStates.CHAT)
+        self.session = new_session
+        if not new_session:
+            self.set_state(ClientStates.MENU)
             return
-        self.set_state(ClientStates.MENU)
+        self.set_state(ClientStates.CHAT)
 
     def set_username(self, new_username: str):
         self._username = new_username
@@ -75,10 +76,6 @@ class ClientManager:
             )
             return
         self._state = new_state
-        return
-
-    def set_session(self, session):
-        self.session = session
         return
 
     def get_username(self):
