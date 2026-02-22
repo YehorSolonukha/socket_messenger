@@ -14,9 +14,9 @@ class ClientManager:
         self._state: ClientStates
 
         self._smanager = smanager
-        self._ses_manager: "ses_manager" = None
 
         self.command_handler = CommandHandler(self._smanager)
+        self.session = None
 
 
     # main loop
@@ -25,15 +25,17 @@ class ClientManager:
         self.command_handler.handle_display_menu(self)
         while True:
             try:
-                command = self.receive_message()
-                if not command:
+                message = self.receive_message()
+                if not message:
                     self.disconnect_client()
                     break
             except Exception as e:
                 print(repr(e))
                 self.disconnect_client()
                 break
-            self.command_handler.dispatch(self, command)
+            if self.is_in_chat():
+                self.session.relay(self, message)
+            self.command_handler.dispatch(self, message)
 
     # basic IO
     def send_message(self, message: str):
@@ -56,6 +58,13 @@ class ClientManager:
         return
 
     # getters/setters
+    def set_session(self, new_session):
+        self.set_session = new_session
+        if new_session:
+            self.set_state(ClientStates.CHAT)
+            return
+        self.set_state(ClientStates.MENU)
+
     def set_username(self, new_username: str):
         self._username = new_username
 
@@ -68,8 +77,8 @@ class ClientManager:
         self._state = new_state
         return
 
-    def set_session(self, session: "ses_manager"):
-        self._ses_manager = session
+    def set_session(self, session):
+        self.session = session
         return
 
     def get_username(self):
@@ -79,7 +88,7 @@ class ClientManager:
         return self._state
 
     def get_session(self):
-        return self._ses_manager
+        return self.session
     
     # helpers
     def is_in_chat(self) -> bool:

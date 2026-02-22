@@ -23,34 +23,23 @@ class SessionManager:
 
         # initiate actual chat
         self._notify_both_clients_about_established_connection()
-        self.start_talking(requester=self)
-
         return
 
     
     # ---Direct communication between Clients (message relay)--- #
 
-    def start_talking(self, requester, message: str = None):
-        # check if requester is smanager or self
-        # if not (isinstance(requester, 'smanager') or isinstance(requester, self)):
-        #    print("Not autorized to use this method - 'initialize_communication()'")
-        #    return
-
+    def relay(self, sender: ClientManager, message: str = None):
         if not message:
-            message = self.cmanagerSrc.receive_message()
+            return
 
-        while not self._exit_condition_met():
-            if message == "/exit":
-                self._set_exit_condition()
-                self._exit_condition_handler(message)
-                break
+        if message == "/exit":
+            self._set_exit_condition()
+            self._exit_condition_handler(message)
+            return
 
-            self.cmanagerTarget.send_message_include_sender(
-                message, self.cmanagerSrc.get_username()
-            )  # might be redundant
-            message = self.cmanagerSrc.receive_message()
-            
-        return
+        self.cmanagerTarget.send_message_include_sender(
+            message, sender.get_username()
+        )
 
     def _exit_condition_met(self):
         if not self.cmanagerSrc.get_session() and self.cmanagerSrc.get_state() == ClientStates.MENU:
