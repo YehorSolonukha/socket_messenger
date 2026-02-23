@@ -92,7 +92,7 @@ class AuthManager:
 
         elif must_exist:
             if not self._storage.client_exists(username):
-                description = ("Sorry, this username doesn't exist in our database")
+                description = ("Sorry, this username doesn't exist in our database\n")
                 return "", description
         return username, ""
             
