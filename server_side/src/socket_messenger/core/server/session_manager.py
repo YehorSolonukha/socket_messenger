@@ -22,8 +22,8 @@ class SessionManager:
         self.storage_manager = StorageManager()
         self.message_manager = MessageManager()
         
-
-        self._notify_both_clients_about_established_connection()
+        self.cmanagerSrc.prepare_chat_view(self.cmanagerTarget.get_username())
+        self.cmanagerTarget.prepare_chat_view(self.cmanagerSrc.get_username())
 
 
     def relay(self, sender: ClientManager, message: str = None):
@@ -64,16 +64,6 @@ class SessionManager:
         self.cmanagerTarget.send_message(
             f"The chat with {self.cmanagerSrc.get_username()} is over\n"
         )
-
-
-    def _notify_both_clients_about_established_connection(self):
-        self.cmanagerSrc.send_message(
-            f"You entered a chat with {self.cmanagerTarget.get_username()}, please type /exit to exit.\n"
-        )
-        self.cmanagerTarget.send_message(
-            f"You entered a chat with {self.cmanagerSrc.get_username()}, please type /exit to exit.\n"
-        )
-        return
 
     def _set_session_managers_for_both_clients_to_none(self):
         self.cmanagerSrc.set_session(None)

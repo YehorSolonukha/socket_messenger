@@ -1,6 +1,9 @@
+import os
+
 from socket_messenger.core.client.client_states import ClientStates
 from socket_messenger.network.client_connection import ClientConnection
 from socket_messenger.core.server.command_handler import CommandHandler
+from socket_messenger.storage.message_manager import MessageManager
 
 class ClientManager:
     def __init__(
@@ -14,6 +17,7 @@ class ClientManager:
         self._state: ClientStates
 
         self._smanager = smanager
+        self.message_manager = MessageManager()
 
         self.command_handler = CommandHandler(self._smanager)
         self.session = None
@@ -57,6 +61,24 @@ class ClientManager:
         self.connection.close_client_connection()
         self.set_state(ClientStates.DISCONNECTED)
         return
+    
+    # chat helpers
+    def prepare_chat_view(self, other_client: str):
+        self.clear_screen()
+        self.send_message(f"You entered a chat with {other_client}. To return to main menu - issue /exit command")
+        self.display_previous_messages()
+
+    def clear_screen(self):
+        self.send_message("\n"*50)
+
+    def display_previous_messages(self, other_client: str):
+        prev_messages = self.message_manager.get_messages_between(self.get_username(), other_client)
+        for message in prev_messages:
+            if message.sender == other_client:
+                sender = f"{other_client}:"
+            else:
+                sender = ""
+            self.send_message(f"{message.timestamp} | {sender} {message.content}")
 
     # getters/setters
     def set_session(self, new_session):
