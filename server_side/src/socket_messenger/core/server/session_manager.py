@@ -1,7 +1,10 @@
+from datetime import datetime
+
 from socket_messenger.core.client.client_manager import ClientManager
 from socket_messenger.core.client.client_states import ClientStates
-from socket_messenger.storage.storage_manager import StorageManager
 
+from socket_messenger.storage.storage_manager import StorageManager
+from socket_messenger.storage.message_manager import MessageManager, Message
 
 class SessionManager:
     def __init__(
@@ -10,11 +13,15 @@ class SessionManager:
         cmanagerTarget: ClientManager,
         smanager: "ServerManager",
     ):
+        self.active = True
+
         self.cmanagerSrc = cmanagerSrc
         self.cmanagerTarget = cmanagerTarget
         self.smanager = smanager
+
         self.storage_manager = StorageManager()
-        self.active = True
+        self.message_manager = MessageManager()
+        
 
         self._notify_both_clients_about_established_connection()
 
@@ -32,14 +39,15 @@ class SessionManager:
             return
 
         if sender is self.cmanagerSrc:
-            self.cmanagerTarget.send_message_include_sender(
-                message, sender.get_username()
-            )
-            return
-        
-        self.cmanagerSrc.send_message_include_sender(
-                message, sender.get_username()
-            )
+            receiver = self.cmanagerTarget
+        else:
+            receiver = self.cmanagerSrc
+
+        receiver.send_message_include_sender(
+            message, sender.get_username()
+        )
+        message_to_save = Message(sender.get_username(), receiver.get_username(), message, datetime.now())
+        self.message_manager.save_message(message_to_save)
 
 
     def _close(self):
