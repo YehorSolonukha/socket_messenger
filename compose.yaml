@@ -1,14 +1,14 @@
 services:
   server:
-    build: ./server_side/
+    build: ./server/
     env_file:
-      - ./server_side/.env
+      - ./server/.env
 
 
   client:
-    build: ./client_side/
+    build: ./client/
     env_file:
-      - ./client_side/.env
+      - ./client/.env
     depends_on:
       - server
     stdin_open: true #same as -it flags
