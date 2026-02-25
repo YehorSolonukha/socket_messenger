@@ -1,0 +1,29 @@
+name: CI - Run Tests
+
+on:
+    pull_request:
+        branches:
+            - main
+    workflow_dispatch:
+
+jobs:
+    auto-test:
+        runs-on: ubuntu-22.04
+        steps:
+            - name: checkout repo
+              uses: actions/checkout@4
+
+            - name: ensure python is set up
+              uses: actions/setup-python@5
+              with:
+                python-version: '3.14'
+                cache: 'pip'
+
+            - name: install project and dependencies
+              run: |
+                pip install .
+            
+            - name: run tests
+              run: |
+                python -m unittest discover
+            

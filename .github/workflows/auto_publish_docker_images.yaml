@@ -17,12 +17,12 @@ jobs:
 
             - name: Build and Push Client
               run: |
-                docker build -t ${{ secrets.DOCKERHUB_USERNAME }}/socket_messenger_server:latest ./client_side
+                docker build -t ${{ secrets.DOCKERHUB_USERNAME }}/socket_messenger_client:latest ./client
                 docker push ${{ secrets.DOCKERHUB_USERNAME }}/socket_messenger_client:latest
 
             - name: Build and Push Server
               run: |
-                docker build -t ${{ secrets.DOCKERHUB_USERNAME }}/socket_messenger_server:latest ./server_side
+                docker build -t ${{ secrets.DOCKERHUB_USERNAME }}/socket_messenger_server:latest ./server
                 docker push ${{ secrets.DOCKERHUB_USERNAME }}/socket_messenger_server:latest
             
 
