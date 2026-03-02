@@ -3,7 +3,8 @@
 name = "socket_messenger"
 version = "1.0.0"
 dependencies = [
-    "python-dotenv"
+    "python-dotenv",
+    "psycopg2"
 ]
 
 
