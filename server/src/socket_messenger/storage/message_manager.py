@@ -1,7 +1,10 @@
+import os
 import psycopg2
+from dotenv import load_dotenv
+
+load_dotenv()
 
 class Message:
-    # Set timestamp to None by default so the database can generate it
     def __init__(self, sender: str, receiver: str, content: str, timestamp=None):
         self.sender = sender
         self.receiver = receiver
@@ -10,12 +13,13 @@ class Message:
 
 class MessageManager:
     def __init__(self):
+        # Load credentials from .env
         self.db_params = {
-            "host": "database",
-            "dbname": "postgres",
-            "user": "postgres",
-            "password": "password",
-            "port": 5432
+            "host": os.environ.get("DB_HOST"),
+            "dbname": os.environ.get("DB_NAME"),
+            "user": os.environ.get("DB_USER"),
+            "password": os.environ.get("DB_PASSWORD"),
+            "port": int(os.environ.get("DB_PORT", 5432))
         }
 
     def _get_connection(self):
@@ -25,7 +29,6 @@ class MessageManager:
         try:
             with self._get_connection() as conn:
                 with conn.cursor() as cur:
-                    # We let the DB handle the timestamp, and use RETURNING to grab it
                     cur.execute(
                         """
                         INSERT INTO messages (sender_username, receiver_username, content) 
@@ -33,8 +36,6 @@ class MessageManager:
                         """,
                         (message.sender, message.receiver, message.content)
                     )
-                    
-                    # Update the Python object with the official DB timestamp
                     generated_timestamp = cur.fetchone()[0]
                     message.timestamp = generated_timestamp
             return True
@@ -47,7 +48,6 @@ class MessageManager:
         try:
             with self._get_connection() as conn:
                 with conn.cursor() as cur:
-                    # Look for messages A->B OR B->A, sorted oldest to newest
                     cur.execute(
                         """
                         SELECT sender_username, receiver_username, content, sent_at 
@@ -58,10 +58,7 @@ class MessageManager:
                         """,
                         (sender, receiver, receiver, sender)
                     )
-                    
                     rows = cur.fetchall()
-                    
-                    # Convert DB rows back into Python Message objects
                     for row in rows:
                         msg = Message(
                             sender=row[0], 
@@ -70,8 +67,6 @@ class MessageManager:
                             timestamp=row[3]
                         )
                         chat_history.append(msg)
-                        
         except Exception as e:
             print(f"Error retrieving messages: {e}")
-            
         return chat_history
