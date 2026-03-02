@@ -66,13 +66,15 @@ class ClientManager:
     def prepare_chat_view(self, other_client: str):
         self.clear_screen()
         self.send_message(f"You entered a chat with {other_client}. To return to main menu - issue /exit command")
-        self.display_previous_messages()
+        self.display_previous_messages(other_client)
 
     def clear_screen(self):
         self.send_message("\n"*50)
 
     def display_previous_messages(self, other_client: str):
         prev_messages = self.message_manager.get_messages_between(self.get_username(), other_client)
+        if not prev_messages:
+            return
         for message in prev_messages:
             if message.sender == other_client:
                 sender = f"{other_client}:"

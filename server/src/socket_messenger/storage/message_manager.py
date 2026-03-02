@@ -6,8 +6,8 @@ class Message():
         self.timestamp = timestamp
 
 class MessageManager():
-    def save_message(message: Message) -> bool:
+    def save_message(self, message: Message) -> bool:
         pass
 
-    def get_messages_between(sender: str, receiver: str) -> list[Message]:
+    def get_messages_between(self, sender: str, receiver: str) -> list[Message]:
         pass

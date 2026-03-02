@@ -127,7 +127,7 @@ class ServerManager:
         # Create and start a session between two clients
         session = SessionManager(src_manager, target_manager, self)
         src_manager.set_session(session)
-        self._client_server_connections[target_username].set_session(session)
+        target_manager.set_session(session)
 
     def handle_change_username(
         self,
