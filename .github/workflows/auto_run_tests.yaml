@@ -12,10 +12,10 @@ jobs:
         runs-on: ubuntu-22.04
         steps:
             - name: checkout repo
-              uses: actions/checkout@4
+              uses: actions/checkout@v4
 
             - name: ensure python is set up
-              uses: actions/setup-python@5
+              uses: actions/setup-python@v5
               with:
                 python-version: '3.14'
                 cache: 'pip'
