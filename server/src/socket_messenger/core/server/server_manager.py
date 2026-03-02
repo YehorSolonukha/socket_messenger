@@ -108,19 +108,26 @@ class ServerManager:
         Initiates a client-to-client session if the target user exists
         and is not the same as the source user.
         """
-        if target_username not in self._client_server_connections:
+        if not self._storage.client_exists(target_username):
             src_manager.send_message(f"User '{target_username}' doesn't exist")
             return
 
         if target_username == src_manager.get_username():
             src_manager.send_message("You cannot connect with yourself...")
             return
+        
+        if self._client_server_connections[target_username].is_in_chat():
+            src_manager.send_message(
+                f"Unable to connect with {target_username}, user is in 'chat' mode... \n Please try again later"
+            )
+            return
 
         target_manager = self._client_server_connections[target_username]
 
         # Create and start a session between two clients
         session = SessionManager(src_manager, target_manager, self)
-        session.create_and_handle_client_to_client_communication()
+        src_manager.set_session(session)
+        target_manager.set_session(session)
 
     def handle_change_username(
         self,

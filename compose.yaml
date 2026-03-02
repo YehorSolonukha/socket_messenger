@@ -1,16 +1,31 @@
 services:
   server:
-    image: yehor542/socket_messenger_server:latest
+#    image: yehor542/socket_messenger_server
+    build: ./server
     env_file:
-      - ./server_side/.env
+      - ./server/.env
 
+  database:
+    image: postgres
+    env_file:
+      - ./database/.env
+    volumes:
+      - ./database/init.sql:/docker-entrypoint-initdb.d/init.sql:ro #init script
+      - postgres_data:/var/lib/postgresql # persistency
+    expose:
+      - 5432
 
   client:
-    image: yehor542/socket_messenger_client:latest
+#    image: yehor542/socket_messenger_client
+    build: ./client
     env_file:
-      - ./client_side/.env
+      - ./client/.env
     depends_on:
       - server
     stdin_open: true #same as -it flags
     tty: true
     command: sleep infinity
+
+volumes:
+  postgres_data:
+

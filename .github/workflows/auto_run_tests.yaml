@@ -1,0 +1,30 @@
+#### env vars for containers have to be inserted ####
+name: CI - Run Tests
+
+on:
+    pull_request:
+        branches:
+            - main
+    workflow_dispatch:
+
+jobs:
+    auto-test:
+        runs-on: ubuntu-22.04
+        steps:
+            - name: checkout repo
+              uses: actions/checkout@v4
+
+            - name: ensure python is set up
+              uses: actions/setup-python@v5
+              with:
+                python-version: '3.14'
+                cache: 'pip'
+
+            - name: install project and dependencies
+              run: |
+                pip install ./server/
+            
+            - name: run tests
+              run: |
+                python -m unittest discover -v -s ./server/tests -p 'test_*.py'
+            
