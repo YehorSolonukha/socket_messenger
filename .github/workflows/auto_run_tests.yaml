@@ -22,7 +22,7 @@ jobs:
 
             - name: install project and dependencies
               run: |
-                pip install .
+                pip install ./server/
             
             - name: run tests
               run: |
