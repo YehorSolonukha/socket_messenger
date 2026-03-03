@@ -19,7 +19,8 @@ class MessageManager:
             "dbname": os.environ.get("DB_NAME"),
             "user": os.environ.get("DB_USER"),
             "password": os.environ.get("DB_PASSWORD"),
-            "port": int(os.environ.get("DB_PORT", 5432))
+            "port": int(os.environ.get("DB_PORT", 5432)),
+            "connect_timeout":5
         }
 
     def _get_connection(self):
