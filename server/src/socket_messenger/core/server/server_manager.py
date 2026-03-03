@@ -90,8 +90,9 @@ class ServerManager:
         """
         username = self._auth_manager.authenticate_client(connection)
         if not username:
-            self.handle_disconnect_client()
+            connection.close_client_connection()
             return
+        
         cl_manager = ClientManager(self, connection, username)
 
         # Store active client by username
