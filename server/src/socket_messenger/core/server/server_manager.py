@@ -89,6 +89,9 @@ class ServerManager:
         Registers a new client and hands control over to its ClientManager.
         """
         username = self._auth_manager.authenticate_client(connection)
+        if not username:
+            self.handle_disconnect_client()
+            return
         cl_manager = ClientManager(self, connection, username)
 
         # Store active client by username
