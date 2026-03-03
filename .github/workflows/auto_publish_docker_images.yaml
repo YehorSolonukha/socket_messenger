@@ -12,17 +12,23 @@ jobs:
             - name: Checkout code
               uses: actions/checkout@v4
 
+            # 2. Set up Docker Buildx (The engine that makes caching work)
+            - name: Set up Docker Buildx
+              uses: docker/setup-buildx-action@v3
+
             - name: Login to Docker Hub
               run: echo "${{ secrets.DOCKERHUB_TOKEN }}" | docker login -u ${{ secrets.DOCKERHUB_USERNAME }} --password-stdin
 
-            - name: Build and Push Client
-              run: |
-                docker build -t ${{ secrets.DOCKERHUB_USERNAME }}/socket_messenger_client:latest ./client
-                docker push ${{ secrets.DOCKERHUB_USERNAME }}/socket_messenger_client:latest
-
             - name: Build and Push Server
-              run: |
-                docker build -t ${{ secrets.DOCKERHUB_USERNAME }}/socket_messenger_server:latest ./server
-                docker push ${{ secrets.DOCKERHUB_USERNAME }}/socket_messenger_server:latest
+              uses: docker/build-push-action@v5
+              with:
+                context: .
+                push: true
+                tags: yehor542/socket_messenger_server:latest
+                cache-from: type=gha
+                cache-to: type=gha,mode=max
+              #run: |
+              #  docker build -t ${{ secrets.DOCKERHUB_USERNAME }}/socket_messenger_server:latest ./server
+              #  docker push ${{ secrets.DOCKERHUB_USERNAME }}/socket_messenger_server:latest
             
 
