@@ -8,18 +8,22 @@ class AuthManager:
     def authenticate_client(self, connection: ClientConnection) -> str:
         while True:
             connection.send_to_client("Would you like to /login or /register ?")
-            command = connection.receive_from_client().strip()
+            command = connection.receive_from_client()
 
             if not command:
                 connection.send_to_client(
-                    "Seems like you didn't enter anything, please try again\n"
+                    "Seems like you're disconnecting, shutting down\n"
                 )
-                continue
-            elif len(command.split()) != 1:
+                return
+            
+            command = command.strip()
+            
+            if len(command.split()) != 1:
                 connection.send_to_client(
                     "Too many arguments, should be either '/login' or '/register', nothing more... Please try again\n"
                 )
                 continue
+
             elif command == "/login":
                 username, description = self.login(connection)
                 if not username:
