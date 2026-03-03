@@ -14,7 +14,8 @@ class StorageManager:
             "user": os.environ.get("DB_USER"),
             "password": os.environ.get("DB_PASSWORD"),
             "port": int(os.environ.get("DB_PORT", 5432)),
-            "connect_timeout":5
+            "connect_timeout":5,
+            "sslmode": "require"
         }
 
     def _get_connection(self):
