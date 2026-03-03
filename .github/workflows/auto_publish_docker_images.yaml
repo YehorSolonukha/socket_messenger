@@ -11,6 +11,11 @@ jobs:
         steps:
             - name: Checkout code
               uses: actions/checkout@v4
+            
+            - name: Debug Secret Presence
+              run: |
+                if [ -z "${{ secrets.DOCKERHUB_USERNAME }}" ]; then echo "USERNAME is EMPTY"; else echo "USERNAME is found"; fi
+                if [ -z "${{ secrets.DOCKERHUB_TOKEN }}" ]; then echo "TOKEN is EMPTY"; else echo "TOKEN is found"; fi
 
             # 2. Set up Docker Buildx (The engine that makes caching work)
             - name: Set up Docker Buildx

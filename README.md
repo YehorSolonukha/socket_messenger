@@ -61,5 +61,5 @@ docker compose run --it client
 ```
 6. open a new terminal for the second client and start a client container
 ```
-docker compose run --it client
+docker compose run --it client 
 ```
