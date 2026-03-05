@@ -55,10 +55,10 @@ class ServerManager:
         self._server_port = server_port
 
         # Persistent storage configuration
-        self._storage = StorageManager()
+        self.storage = StorageManager()
 
         # Authentication
-        self._auth_manager = AuthManager(self._storage)
+        self._auth_manager = AuthManager(self.storage)
 
         # Active clients mapped by username
         self._client_server_connections: dict[str, ClientManager] = {}
@@ -92,7 +92,6 @@ class ServerManager:
         if not username:
             connection.close_client_connection()
             return
-        
         cl_manager = ClientManager(self, connection, username)
 
         # Store active client by username
@@ -112,7 +111,7 @@ class ServerManager:
         Initiates a client-to-client session if the target user exists
         and is not the same as the source user.
         """
-        if not self._storage.client_exists(target_username):
+        if not self.storage.client_exists(target_username):
             src_manager.send_message(f"User '{target_username}' doesn't exist")
             return
 

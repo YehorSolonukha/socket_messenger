@@ -6,53 +6,72 @@ class AuthManager:
         self._storage = storage
 
     def authenticate_client(self, connection: ClientConnection) -> str:
-        while True:
-            connection.send_to_client("Would you like to /login or /register ?")
-            command = connection.receive_from_client()
+        try:
+            while True:
+                # 1. Network Guard: If the client disappears, 'send' or 'receive' will raise an error
+                try:
+                    connection.send_to_client("Would you like to /login or /register ?")
+                    command = connection.receive_from_client()
+                except (ConnectionResetError, BrokenPipeError, OSError) as e:
+                    print(f"📡 Client disconnected during auth: {e}", flush=True)
+                    return None
 
-            if not command:
-                connection.send_to_client(
-                    "Seems like you're disconnecting, shutting down\n"
-                )
-                return
-            
-            command = command.strip()
-            
-            if len(command.split()) != 1:
-                connection.send_to_client(
-                    "Too many arguments, should be either '/login' or '/register', nothing more... Please try again\n"
-                )
-                continue
-
-            elif command == "/login":
-                username, description = self.login(connection)
-                if not username:
-                    connection.send_to_client(description)
+                if not command:
+                    return None 
+                
+                command = command.strip()
+                
+                if len(command.split()) != 1:
+                    connection.send_to_client("Invalid input. Use '/login' or '/register'\n")
                     continue
-                break
-            elif command == "/register":
-                username, description = self.register(connection)
-                if not username:
-                    connection.send_to_client(description)
-                    continue
-                break
-            else:
-                connection.send_to_client("Unknown command... Please try again\n")
 
-        return username
+                # 2. Logic Guard: Handle DB or logic crashes inside login/register
+                try:
+                    if command == "/login":
+                        result = self.login(connection) # returns (username, desc)
+                    elif command == "/register":
+                        result = self.register(connection)
+                    else:
+                        connection.send_to_client("Unknown command...\n")
+                        continue
+
+                    username, description = result
+                    if not username:
+                        connection.send_to_client(f"❌ {description}\n")
+                        continue
+                    
+                    return username # Success!
+
+                except Exception as e:
+                    # This catches DB errors, attribute errors, or indexing errors
+                    print(f"🔥 Auth Logic Error: {e}", flush=True)
+                    connection.send_to_client("Internal server error. Please try again later.\n")
+                    continue
+
+        except Exception as e:
+            # The ultimate safety net for the entire thread
+            print(f"💀 Fatal crash in authenticate_client: {e}", flush=True)
+            return None
 
 
     def login(self, connection) -> tuple[str, str]:
-        username, description = self._get_validated_username(connection, must_exist=True)
-        if not username:
-            return "", description
-        
-        password, description = self._prompt_for_password(connection)
-        if not self._storage.verify_password(username, password):
-            description = "Password is not correct"
-            return "", description
-        
-        return username, ""
+
+        try:
+            username, description = self._get_validated_username(connection, must_exist=True)
+            if not username:
+                return "", description
+            
+            password, description = self._prompt_for_password(connection)
+            
+            if not self._storage.verify_password(username, password):
+                description = "Password is not correct"
+                return "", description
+            
+            return username, ""
+
+        except Exception as e:
+            print(f"CRASH in login(): {e}")
+            return "", "Internal server error"
 
     def register(self, connection:ClientConnection) -> tuple[str, str]:
         username, description = self._get_validated_username(connection, must_exist=False)
