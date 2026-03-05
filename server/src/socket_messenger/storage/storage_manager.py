@@ -1,7 +1,6 @@
 import os
 import psycopg2
 import time
-from psycopg2.errors import UniqueViolation
 from dotenv import load_dotenv
 
 load_dotenv()
@@ -92,8 +91,6 @@ class StorageManager:
                         (username, password)
                     )
             return True
-        except UniqueViolation:
-            return False
         except Exception as e:
             print(f"Database error during registration: {e}")
             return False

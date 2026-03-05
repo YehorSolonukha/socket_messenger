@@ -15,7 +15,7 @@ class ClientManager:
         self._state: ClientStates|None = None
 
         self._smanager = smanager
-        self.message_manager = MessageManager()
+        self.message_manager = MessageManager(self._smanager.storage)
 
         self.command_handler = CommandHandler(self._smanager)
         self.session = None

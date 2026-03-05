@@ -20,7 +20,7 @@ class SessionManager:
         self.smanager = smanager
 
         self.storage_manager = StorageManager()
-        self.message_manager = MessageManager()
+        self.message_manager = MessageManager(self.storage_manager)
         
         self.cmanagerSrc.prepare_chat_view(self.cmanagerTarget.get_username())
         self.cmanagerTarget.prepare_chat_view(self.cmanagerSrc.get_username())
