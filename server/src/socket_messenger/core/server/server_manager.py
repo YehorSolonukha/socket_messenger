@@ -88,7 +88,6 @@ class ServerManager:
         """
         Registers a new client and hands control over to its ClientManager.
         """
-        print("new connection")
         username = self._auth_manager.authenticate_client(connection)
         if not username:
             connection.close_client_connection()

@@ -6,7 +6,6 @@ def main():
     serv_manager.run()
 
 if __name__ == "__main__":
-    print("server started")
     main()
 
 

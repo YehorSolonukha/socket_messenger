@@ -4,13 +4,15 @@ services:
     build: ./server
     env_file:
       - ./server/.env
+    depends_on:
+      - database
 
   database:
     image: postgres
     env_file:
       - ./database/.env
     volumes:
-      - ./database/init.sql:/docker-entrypoint-initdb.d/init.sql:ro #init script
+#      - ./database/init.sql:/docker-entrypoint-initdb.d/init.sql:ro #init script
       - postgres_data:/var/lib/postgresql # persistency
     expose:
       - 5432

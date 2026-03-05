@@ -1,5 +1,3 @@
-import os
-
 from socket_messenger.core.client.client_states import ClientStates
 from socket_messenger.network.client_connection import ClientConnection
 from socket_messenger.core.server.command_handler import CommandHandler
@@ -80,7 +78,7 @@ class ClientManager:
                 sender = f"{other_client}:"
             else:
                 sender = ""
-            self.send_message(f"{message.timestamp} | {sender} {message.content}")
+            self.send_message(f"{message.timestamp} | {sender} {message.content}\n")
 
     # getters/setters
     def set_session(self, new_session):

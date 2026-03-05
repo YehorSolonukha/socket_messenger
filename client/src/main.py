@@ -1,4 +1,6 @@
 import threading
+import time
+import sys
 import os
 from dotenv import load_dotenv
 
@@ -28,8 +30,23 @@ def main():
     network_manager = Network(os.getenv("SERVER_ADDRESS").strip(), int(os.getenv("SERVER_PORT").strip()))
     ui_manager = UI()
     core = Core(network_manager, ui_manager)
+    
+    connected = False
+    retries = 5
 
-    network_manager.connect_to_server()
+    while not connected and retries>0:
+        try:
+            network_manager.connect_to_server()
+            connected = True
+            core.ui.display("✅ Connected to server!")
+        except Exception as e:
+            retries -= 1
+            core.ui.display(f"⚠️ Server not ready. Retrying in 3s... ({retries} attempts left)")
+            time.sleep(3)
+
+    if not connected:
+        core.ui.display("❌ Could not connect to server.")
+        sys.exit(1)
 
     input_thread = threading.Thread(
         target=user_input_loop,
