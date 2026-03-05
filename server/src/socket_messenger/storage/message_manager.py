@@ -1,6 +1,9 @@
 import os
 import psycopg2
+from datetime import datetime
 from dotenv import load_dotenv
+from socket_messenger.storage.storage_manager import StorageManager
+
 
 load_dotenv()
 
@@ -12,23 +15,13 @@ class Message:
         self.timestamp = timestamp
 
 class MessageManager:
-    def __init__(self):
-        # Load credentials from .env
-        self.db_params = {
-            "host": os.environ.get("DB_HOST"),
-            "dbname": os.environ.get("DB_NAME"),
-            "user": os.environ.get("DB_USER"),
-            "password": os.environ.get("DB_PASSWORD"),
-            "port": int(os.environ.get("DB_PORT", 5432)),
-            "connect_timeout":5
-        }
-
-    def _get_connection(self):
-        return psycopg2.connect(**self.db_params)
+    def __init__(self, storage_manager: StorageManager):
+        self.storage_manager = storage_manager
+        
 
     def save_message(self, message: Message) -> bool:
         try:
-            with self._get_connection() as conn:
+            with self.storage_manager.get_connection() as conn:
                 with conn.cursor() as cur:
                     cur.execute(
                         """
@@ -37,8 +30,9 @@ class MessageManager:
                         """,
                         (message.sender, message.receiver, message.content)
                     )
-                    generated_timestamp = cur.fetchone()[0]
-                    message.timestamp = generated_timestamp
+                    now = datetime.now()
+                    formatted_time = now.strftime("%m-%d %H:%M")
+                    message.timestamp = formatted_time
             return True
         except Exception as e:
             print(f"Error saving message: {e}")
@@ -47,7 +41,7 @@ class MessageManager:
     def get_messages_between(self, sender: str, receiver: str) -> list[Message]:
         chat_history = []
         try:
-            with self._get_connection() as conn:
+            with self.storage_manager.get_connection() as conn:
                 with conn.cursor() as cur:
                     cur.execute(
                         """
